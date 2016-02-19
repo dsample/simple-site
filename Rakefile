@@ -4,8 +4,8 @@ require "tmpdir"
 require "bundler/setup"
 require "jekyll"
 
-GITHUB_REPONAME = ENV['GITHUB_REPONAME'] # <username>/<repo>
-GITHUB_TOKEN = ENV['GITHUB_TOKEN']       # Generate an app token on GitHub
+GITHUB_REPO = ENV['GITHUB_REPO'] # <username>/<repo>
+GITHUB_TOKEN = ENV['GITHUB_TOKEN']   # Generate an app token on GitHub
 GITHUB_BRANCH = ENV['GITHUB_BRANCH'] || 'gh-pages'
 
 namespace :site do
@@ -19,8 +19,10 @@ namespace :site do
 
   desc "Generate and publish blog to gh-pages"
   task :publish => [:generate] do
-    fail if GITHUB_REPONAME.to_s.empty?
-    fail if GITHUB_TOKEN.to_s.empty?
+    fail 'No GitHub repo specified' if GITHUB_REPO.to_s.empty?
+    fail 'No GitHub token set' if GITHUB_TOKEN.to_s.empty?
+
+    puts "Pushing to #{GITHUB_REPO} #{GITHUB_BRANCH}"
 
     Dir.mktmpdir do |tmp|
       cp_r "_site/.", tmp
@@ -29,7 +31,7 @@ namespace :site do
       `git add .`
       message = "Site updated at #{Time.now.utc}"
       `git commit -m #{message.inspect}`
-      pushed = `git push --force --quiet https://#{GITHUB_TOKEN}@github.com/#{GITHUB_REPONAME}.git master:#{GITHUB_BRANCH}`
+      `git push --force --quiet https://#{GITHUB_TOKEN}@github.com/#{GITHUB_REPO}.git master:#{GITHUB_BRANCH}`
     end
   end
 end
