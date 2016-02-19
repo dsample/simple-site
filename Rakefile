@@ -1,5 +1,6 @@
 require "rubygems"
 require "tmpdir"
+require "open3"
 
 require "bundler/setup"
 require "jekyll"
@@ -32,15 +33,19 @@ namespace :site do
     Dir.mktmpdir do |tmp|
       cp_r "_site/.", tmp
       Dir.chdir tmp
-      system "git init"
-      system %Q[git config user.name "#{GIT_USER_NAME}"]
-      system %Q[git config user.email "#{GIT_USER_EMAIL}"]
-      system "git add ."
-      message = "Site updated at #{Time.now.utc}"
-      system "git commit -m #{message.inspect}"
-      `git push --force --quiet https://#{GITHUB_TOKEN}@github.com/#{GITHUB_REPO}.git master:#{GITHUB_BRANCH}`
 
-      fail 'Git push failed' if $?.to_i > 0
+      fail unless system "git init"
+      fail unless system %Q[git config user.name "#{GIT_USER_NAME}"]
+      fail unless system %Q[git config user.email "#{GIT_USER_EMAIL}"]
+      fail unless system "git add ."
+      message = "Site updated at #{Time.now.utc}"
+      fail unless system "git commit -m #{message.inspect}"
+
+      o, e, s = Open3.capture3 "git push --force --quiet https://#{GITHUB_TOKEN}@github.com/#{GITHUB_REPO}.git master:#{GITHUB_BRANCH}"
+      puts o.gsub(/#{GITHUB_TOKEN}/, '[secure]')
+      puts e.gsub(/#{GITHUB_TOKEN}/, '[secure]')
+
+      fail 'Git push failed' if s.exitstatus > 0
     end
   end
 end
