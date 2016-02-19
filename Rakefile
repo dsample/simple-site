@@ -7,6 +7,7 @@ require "jekyll"
 GITHUB_REPO = ENV['GITHUB_REPO'] # <username>/<repo>
 GITHUB_TOKEN = ENV['GITHUB_TOKEN']   # Generate an app token on GitHub
 GITHUB_BRANCH = ENV['GITHUB_BRANCH'] || 'gh-pages'
+GIT_USER_NAME = `git config --get user.name` || 'Travis CI'
 
 namespace :site do
   desc "Generate blog files"
@@ -28,6 +29,7 @@ namespace :site do
       cp_r "_site/.", tmp
       Dir.chdir tmp
       `git init`
+      `git config user.name "#{GIT_USER_NAME}"`
       `git add .`
       message = "Site updated at #{Time.now.utc}"
       `git commit -m #{message.inspect}`
