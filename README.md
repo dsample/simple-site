@@ -4,3 +4,6 @@ The built site is visible through the power of GitHub Pages: http://dsample.gith
 
 # simple-site
 A simple site using Jekyll with a GitHub pages deployment through Travis CI
+
+Helpful sites:
+* http://jmcglone.com/guides/github-pages/
