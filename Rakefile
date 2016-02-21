@@ -42,8 +42,8 @@ namespace :site do
       fail unless system "git commit -m #{message.inspect}"
 
       o, e, s = Open3.capture3 "git push --force --quiet https://#{GITHUB_TOKEN}@github.com/#{GITHUB_REPO}.git master:#{GITHUB_BRANCH}"
-      puts o.gsub(/#{GITHUB_TOKEN}/, '[secure]')
-      puts e.gsub(/#{GITHUB_TOKEN}/, '[secure]')
+      puts o.gsub(/#{Regexp.escape(GITHUB_TOKEN)}/, '[secure]')
+      puts e.gsub(/#{Regexp.escape(GITHUB_TOKEN)}/, '[secure]')
 
       fail 'Git push failed' if s.exitstatus > 0
     end
