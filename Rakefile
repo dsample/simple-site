@@ -16,7 +16,7 @@ namespace :site do
   desc "Generate blog files"
   task :generate do
     Jekyll::Site.new(Jekyll.configuration({
-      "source"      => "src",
+      "source"      => "docs",
       "destination" => "_site"
     })).process
   end
